@@ -18,6 +18,9 @@ Global
 		Release_net35|Any CPU = Release_net35|Any CPU
 		Release_net35|x64 = Release_net35|x64
 		Release_net35|x86 = Release_net35|x86
+		Debug_net35|Any CPU = Debug_net35|Any CPU
+		Debug_net35|x64 = Debug_net35|x64
+		Debug_net35|x86 = Debug_net35|x86
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
@@ -35,6 +38,12 @@ Global
 		{E4989E4C-0875-4528-9031-08E2C0E70103}.Release_net35|x64.Build.0 = Release_net35|Any CPU
 		{E4989E4C-0875-4528-9031-08E2C0E70103}.Release_net35|x86.ActiveCfg = Release_net35|Any CPU
 		{E4989E4C-0875-4528-9031-08E2C0E70103}.Release_net35|x86.Build.0 = Release_net35|Any CPU
+		{E4989E4C-0875-4528-9031-08E2C0E70103}.Debug_net35|Any CPU.ActiveCfg = Debug_net35|Any CPU
+		{E4989E4C-0875-4528-9031-08E2C0E70103}.Debug_net35|Any CPU.Build.0 = Debug_net35|Any CPU
+		{E4989E4C-0875-4528-9031-08E2C0E70103}.Debug_net35|x64.ActiveCfg = Debug_net35|Any CPU
+		{E4989E4C-0875-4528-9031-08E2C0E70103}.Debug_net35|x64.Build.0 = Debug_net35|Any CPU
+		{E4989E4C-0875-4528-9031-08E2C0E70103}.Debug_net35|x86.ActiveCfg = Debug_net35|Any CPU
+		{E4989E4C-0875-4528-9031-08E2C0E70103}.Debug_net35|x86.Build.0 = Debug_net35|Any CPU
 		{E4989E4C-0875-4528-9031-08E2C0E70103}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4989E4C-0875-4528-9031-08E2C0E70103}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4989E4C-0875-4528-9031-08E2C0E70103}.Release|x64.ActiveCfg = Release|Any CPU

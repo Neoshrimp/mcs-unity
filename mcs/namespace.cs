@@ -362,11 +362,14 @@ namespace Mono.CSharp {
 				return Enumerable.Empty<string> ();
 
 			var res = from item in types
-					  where item.Key.StartsWith (prefix) && item.Value.Any (l => (l.Modifiers & Modifiers.PUBLIC) != 0)
+					  where item.Key.StartsWith (prefix, StringComparison.OrdinalIgnoreCase) && 
+					        item.Value.Any (l => (l.Modifiers & Modifiers.PUBLIC) != 0)
 					  select item.Key;
 
 			if (namespaces != null)
-				res = res.Concat (from item in namespaces where item.Key.StartsWith (prefix) select item.Key);
+				res = res.Concat (from item in namespaces 
+								  where item.Key.StartsWith (prefix, StringComparison.OrdinalIgnoreCase) 
+								  select item.Key);
 
 			return res;
 		}
@@ -1014,7 +1017,7 @@ namespace Mono.CSharp {
 					continue;
 
 				var name = un.NamespaceExpression.Name;
-				if (name.StartsWith (prefix))
+				if (name.StartsWith (prefix, StringComparison.OrdinalIgnoreCase))
 					results.Add (name);
 			}
 
@@ -1022,7 +1025,7 @@ namespace Mono.CSharp {
 			IEnumerable<string> all = Enumerable.Empty<string> ();
 
 			foreach (Namespace using_ns in namespace_using_table) {
-				if (prefix.StartsWith (using_ns.Name)) {
+				if (prefix.StartsWith (using_ns.Name, StringComparison.OrdinalIgnoreCase)) {
 					int ld = prefix.LastIndexOf ('.');
 					if (ld != -1) {
 						string rest = prefix.Substring (ld + 1);

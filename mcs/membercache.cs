@@ -827,7 +827,7 @@ namespace Mono.CSharp {
 					if (!name_entry.IsAccessible (ctx))
 						continue;
 
-					if (name == null || name_entry.Name.StartsWith (name)) {
+					if (name == null || name_entry.Name.StartsWith (name, StringComparison.OrdinalIgnoreCase)) {
 						matches.Add (name_entry);
 					}
 				}

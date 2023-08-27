@@ -14,6 +14,8 @@
 // statements even when the expression is incomplete (for example
 // completing inside a lambda
 //
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,16 +33,13 @@ namespace Mono.CSharp {
 				if (name == null)
 					continue;
 
-				if (prefix != null && !name.StartsWith (prefix))
+				if (prefix != null && !name.StartsWith (prefix, StringComparison.OrdinalIgnoreCase))
 					continue;
 
 				if (results.Contains (name))
 					continue;
 
-				if (prefix != null)
-					results.Add (name.Substring (prefix.Length));
-				else
-					results.Add (name);
+                results.Add (name);
 			}
 		}
 
@@ -80,7 +79,7 @@ namespace Mono.CSharp {
 
 			ec.CurrentMemberDefinition.GetCompletionStartingWith (Prefix, results);
 
-			throw new CompletionResult (Prefix, results.Distinct ().Select (l => l.Substring (Prefix.Length)).ToArray ());
+			throw new CompletionResult (Prefix, results.Distinct ().ToArray ());
 		}
 
 		protected override void CloneTo (CloneContext clonectx, Expression t)

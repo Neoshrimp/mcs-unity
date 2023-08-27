@@ -1033,6 +1033,8 @@ namespace Mono.CSharp {
 				all = all.Concat (using_ns.CompletionGetTypesStartingWith (prefix));
 			}
 
+			all = all.Concat(ns.CompletionGetTypesStartingWith (prefix));
+
 			results.AddRange (all);
 
 			base.GetCompletionStartingWith (prefix, results);

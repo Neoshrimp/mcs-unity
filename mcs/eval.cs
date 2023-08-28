@@ -20,13 +20,12 @@ using System.Reflection.Emit;
 using System.IO;
 using System.Text;
 using System.Linq;
-
 namespace Mono.CSharp
 {
 
-	/// <summary>
-	/// Experimental!
-	/// </summary>
+    /// <summary>
+    /// Experimental!
+    /// </summary>
 	public delegate void ValueModificationHandler (string variableName, int row, int column, object value);
 
 	/// <summary>
@@ -235,46 +234,63 @@ namespace Mono.CSharp
 		/// </remarks>
 		public string Compile (string input, out CompiledMethod compiled)
 		{
-			if (input == null || input.Length == 0){
-				compiled = null;
-				return null;
-			}
-
-			lock (evaluator_lock){
-				if (!inited) {
-					Init ();
-					ParseStartupFiles ();
-				} else {
-					ctx.Report.Printer.Reset ();
-				}
-
-				bool partial_input;
-				CSharpParser parser = ParseString (ParseMode.Silent, input, out partial_input);
-
-				// Terse mode, try to provide the trailing semicolon automatically.
-				if (parser == null && Terse && partial_input){
-					bool ignore;
-
-					// check if the source would compile with a block, if so, we should not
-					// add the semicolon.
-					var needs_block = ParseString (ParseMode.Silent, input + "{}", out ignore) != null;
-					if (!needs_block)
-						parser = ParseString (ParseMode.Silent, input + ";", out ignore);
-				}
-				if (parser == null){
-					compiled = null;
-					if (partial_input)
-						return input;
-					
-					ParseString (ParseMode.ReportErrors, input, out partial_input);
-					return null;
-				}
-				
-				Class parser_result = parser.InteractiveResult;
-				compiled = CompileBlock (parser_result, parser.undo, ctx.Report);
-				return null;
-			}
+            return Compile(input, out compiled, "", out _);
 		}
+
+
+
+
+		public string Compile(string input, out CompiledMethod compiled, string assName, out EvaluationInfo evaluationInfo)
+		{
+			evaluationInfo = null;
+            if (input == null || input.Length == 0)
+            {
+                compiled = null;
+                return null;
+            }
+
+            lock (evaluator_lock)
+            {
+                if (!inited)
+                {
+                    Init();
+                    ParseStartupFiles();
+                }
+                else
+                {
+                    ctx.Report.Printer.Reset();
+                }
+
+                bool partial_input;
+                CSharpParser parser = ParseString(ParseMode.Silent, input, out partial_input);
+
+                // Terse mode, try to provide the trailing semicolon automatically.
+                if (parser == null && Terse && partial_input)
+                {
+                    bool ignore;
+
+                    // check if the source would compile with a block, if so, we should not
+                    // add the semicolon.
+                    var needs_block = ParseString(ParseMode.Silent, input + "{}", out ignore) != null;
+                    if (!needs_block)
+                        parser = ParseString(ParseMode.Silent, input + ";", out ignore);
+                }
+                if (parser == null)
+                {
+                    compiled = null;
+                    if (partial_input)
+                        return input;
+
+                    ParseString(ParseMode.ReportErrors, input, out partial_input);
+                    return null;
+                }
+
+                Class parser_result = parser.InteractiveResult;
+                compiled = CompileBlock(parser_result, parser.undo, ctx.Report, assName, out evaluationInfo);
+                return null;
+            }
+        }
+
 
 		/// <summary>
 		///   Compiles the input string and returns a delegate that represents the compiled code.
@@ -695,7 +711,13 @@ namespace Mono.CSharp
 			return parser;
 		}
 
-		CompiledMethod CompileBlock (Class host, Undo undo, Report Report)
+		CompiledMethod CompileBlock(Class host, Undo undo, Report Report)
+		{
+            return CompileBlock(host, undo, Report, "", out _);
+		}
+
+
+        CompiledMethod CompileBlock (Class host, Undo undo, Report Report, string assName, out EvaluationInfo evaluationInfo)
 		{
 #if STATIC
 			throw new NotSupportedException ();
@@ -719,7 +741,8 @@ namespace Mono.CSharp
 				assembly = new AssemblyDefinitionDynamic (module, current_debug_name);
 			}
 
-			assembly.Create (AppDomain.CurrentDomain, access);
+			assembly.Create (AppDomain.CurrentDomain, access, assName, out evaluationInfo);
+
 
 			Method expression_method;
 			if (host != null) {

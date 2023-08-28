@@ -222,29 +222,41 @@ namespace Mono.CSharp
 		//
 		public bool Create (AppDomain domain, AssemblyBuilderAccess access)
 		{
+            return Create(domain, access, "", out _);
+		}
+
+		public bool Create(AppDomain domain, AssemblyBuilderAccess access, string assName, out EvaluationInfo evaluationInfo)
+		{
 #if STATIC || FULL_AOT_RUNTIME
 			throw new NotSupportedException ();
 #else
-			ResolveAssemblySecurityAttributes ();
-			var an = CreateAssemblyName ();
+            ResolveAssemblySecurityAttributes();
+
+			AssemblyName an = null;
+			if(string.IsNullOrEmpty(assName))
+				an = CreateAssemblyName();
+			else
+				an = new AssemblyName(assName);
 
 #if NET6_0
-			Builder = AssemblyBuilder.DefineDynamicAssembly(an, access);
+            Builder = AssemblyBuilder.DefineDynamicAssembly(an, access);
 #else
 			Builder = Builder = file_name == null ?
 						domain.DefineDynamicAssembly(an, access) :
 						domain.DefineDynamicAssembly(an, access, Dirname(file_name));
 #endif
 
-			Builder.MarkCorlibInternal();
+            evaluationInfo = new EvaluationInfo() { assembly = Builder };
 
-			module.Create (this, CreateModuleBuilder ());
-			builder_extra = new AssemblyBuilderMonoSpecific (Builder, Compiler);
-			return true;
+            Builder.MarkCorlibInternal();
+
+            module.Create(this, CreateModuleBuilder());
+            builder_extra = new AssemblyBuilderMonoSpecific(Builder, Compiler);
+            return true;
 #endif
-		}
+        }
 
-		static string Dirname (string name)
+        static string Dirname (string name)
 		{
 			int pos = name.LastIndexOf ('/');
 

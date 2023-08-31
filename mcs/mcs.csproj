@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net6</TargetFramework>
+    <TargetFrameworks>net6.0;net35</TargetFrameworks>
     <OutputType>Library</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -16,13 +16,11 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_net35|AnyCPU' ">
     <DefineConstants>TRACE;DEBUG;NET_2_0,PERMISSIVE;BOOTSTRAP_BASIC;NET_35</DefineConstants>
-    <TargetFramework>net35</TargetFramework>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_net35|AnyCPU' ">
     <DefineConstants>TRACE;NET_2_0,PERMISSIVE;BOOTSTRAP_BASIC;NET_35</DefineConstants>
-    <TargetFramework>net35</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <OutputPath>bin\x64\Debug\</OutputPath>
@@ -43,5 +41,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all"/>
   </ItemGroup>
 </Project>

@@ -1012,31 +1012,38 @@ namespace Mono.CSharp {
 			if (Usings == null)
 				return;
 
-			foreach (var un in Usings) {
-				if (un.Alias != null)
-					continue;
-
-				var name = un.NamespaceExpression.Name;
-				if (name.StartsWith (prefix, StringComparison.OrdinalIgnoreCase))
-					results.Add (name);
-			}
-
-
 			IEnumerable<string> all = Enumerable.Empty<string> ();
+			int ld = prefix.LastIndexOf ('.');
+			if (ld != -1)
+			{
+				string rest = prefix.Substring (ld + 1);
+				
+				var nsCandidates = namespace_using_table
+					.Where(x => prefix.StartsWith(x.Name, StringComparison.OrdinalIgnoreCase))
+					.Select(x => new { Namespace = x, DotsCount = x.Name.Count(y => y == '.')
+					}).ToList();
+				var maxDots = nsCandidates.Max(x => x.DotsCount);
+				var bestNsCandidates = nsCandidates
+					.Where(x => x.DotsCount == maxDots)
+					.Select(x => x.Namespace).ToList();
 
-			foreach (Namespace using_ns in namespace_using_table) {
-				if (prefix.StartsWith (using_ns.Name, StringComparison.OrdinalIgnoreCase)) {
-					int ld = prefix.LastIndexOf ('.');
-					if (ld != -1) {
-						string rest = prefix.Substring (ld + 1);
-
-						all = all.Concat (using_ns.CompletionGetTypesStartingWith (rest));
-					}
+				foreach (Namespace candidate in bestNsCandidates) {
+                    all = all.Concat (candidate.CompletionGetTypesStartingWith (rest));
 				}
+			}
+			else {
+				var nsCandidates = namespace_using_table
+					.Where(x => x.Name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) && 
+					            !x.Name.Contains('.'))
+					.Select(x => x.Name).ToList();
+				results.AddRange(nsCandidates);
+			}
+			
+			foreach (Namespace using_ns in namespace_using_table) {
 				all = all.Concat (using_ns.CompletionGetTypesStartingWith (prefix));
 			}
 
-			all = all.Concat(ns.CompletionGetTypesStartingWith (prefix));
+			all = all.Concat(ns.CompletionGetTypesStartingWith (prefix).Except(namespace_using_table.Select(x => x.Name)));
 
 			results.AddRange (all);
 

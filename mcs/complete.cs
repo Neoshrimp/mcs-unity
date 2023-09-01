@@ -160,13 +160,11 @@ namespace Mono.CSharp {
 				string namespaced_partial;
 
 				if (partial_name == null)
-					namespaced_partial = nexpr.Namespace.Name;
+					namespaced_partial = nexpr.Namespace.Name + ".";
 				else
 					namespaced_partial = nexpr.Namespace.Name + "." + partial_name;
 
 				rc.CurrentMemberDefinition.GetCompletionStartingWith (namespaced_partial, results);
-				if (partial_name != null)
-					results = results.Select (l => l.Substring (partial_name.Length)).ToList ();
 			} else {
 				var r = MemberCache.GetCompletitionMembers (rc, expr_type, partial_name).Select (l => l.Name);
 				AppendResults (results, partial_name, r);
